@@ -3,6 +3,9 @@
   "displayName": "AiScript-Tools",
   "description": "Tools for helping create extensions for misskey and other forks",
   "publisher": "Leah",
+  "repository": {
+    "url": "https://github.com/ChaoticLeah/aiscript-tools"
+  },
   "version": "0.0.1",
   "engines": {
     "vscode": "^1.101.0"
