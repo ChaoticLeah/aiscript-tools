@@ -7,6 +7,7 @@ import path from 'path';
 import { Parser } from '@syuilo/aiscript';
 import { ErrorInfo, formatErrorMessage } from './errorHandler';
 import { resolveIncludes } from './multiFileHandler';
+import { runUnitTest } from './unitTest';
 
 interface AIScriptConfig {
 	browserUrl?: string;
@@ -21,7 +22,7 @@ interface AIScriptConfig {
 let watcher: FSWatcher | undefined;
 
 export function activate(context: vscode.ExtensionContext) {
-	const output = vscode.window.createOutputChannel('AIscript Plugin Runner');
+	const output = vscode.window.createOutputChannel('AIscript Plugin Runner', { log: true });
 
 	const runPluginWatcher = vscode.commands.registerCommand('aiscript.runPluginWatcher', async () => {
 
@@ -79,6 +80,16 @@ export function activate(context: vscode.ExtensionContext) {
 			try {
 				const entryPath = path.resolve(workspaceFolder, config.entry ?? 'src/main.is');
 				const combinedSource = resolveIncludes(entryPath);
+
+				try {
+					Parser.parse(combinedSource);
+				} catch (error) {
+					try {
+						output.appendLine(formatErrorMessage(error as ErrorInfo));
+					} catch (error) {
+						output.appendLine('❌ Unknown Error in code');
+					}
+				}
 
 				if (config.export) {
 					const exportPath = path.resolve(workspaceFolder, config.export);
@@ -188,7 +199,23 @@ export function activate(context: vscode.ExtensionContext) {
 		output.clear();
 	});
 
-	context.subscriptions.push(runPluginWatcher, generateConfig, clearOutputCommand);
+	
+	const unitTestsCommand = vscode.commands.registerCommand('aiscript.unitTest', async () => {
+		output.show(true);
+
+		const editor = vscode.window.activeTextEditor;
+		if (editor) {
+			const filePath = editor.document.uri.fsPath;
+			await runUnitTest(filePath, output);
+
+
+		} else {
+			output.appendLine('No active editor.');
+		}
+	});
+
+
+	context.subscriptions.push(runPluginWatcher, generateConfig, clearOutputCommand, unitTestsCommand);
 }
 
 export async function deactivate() {
