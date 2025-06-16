@@ -41,7 +41,7 @@ export async function runUnitTest(file: string, out: OutputChannel) {
                         return values.TRUE;
                     } else {
                         //@ts-ignore
-                        out.appendLine(`[ERROR] ❌ ${title.value} Failed.\nGot:${value.value}\nExpected:${def.value}`);
+                        out.appendLine(`[ERROR] ❌ ${title.value} Failed.\nGot:${JSON.stringify(value.value)}\nExpected:${JSON.stringify(def.value)}`);
                         // return values.ERROR('test_fail', values.STR(`Failed ${title} test`));
                         return values.FALSE;
                     }

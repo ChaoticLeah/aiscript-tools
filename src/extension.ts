@@ -6,7 +6,7 @@ import path from 'path';
 //@ts-ignore
 import { Parser } from '@syuilo/aiscript';
 import { ErrorInfo, formatErrorMessage } from './errorHandler';
-import { resolveIncludes } from './multiFileHandler';
+import { resolveIncludes, stripUnusedFunctions } from './multiFileHandler';
 import { runUnitTest } from './unitTest';
 
 interface AIScriptConfig {
@@ -58,7 +58,7 @@ export function activate(context: vscode.ExtensionContext) {
 
 		const page = await browser.newPage();
 
-		if (config.pipeConsole ?? true)
+		if (config.pipeConsole ?? true) {
 			page.on('console', async msg => {
 				try {
 					const args = msg.args();
@@ -71,6 +71,7 @@ export function activate(context: vscode.ExtensionContext) {
 					output.appendLine(`[Error parsing console message] ${err}`);
 				}
 			});
+		}
 
 		await page.setUserAgent(
 			'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36'
@@ -79,7 +80,7 @@ export function activate(context: vscode.ExtensionContext) {
 		const injectPlugin = () => {
 			try {
 				const entryPath = path.resolve(workspaceFolder, config.entry ?? 'src/main.is');
-				const combinedSource = resolveIncludes(entryPath);
+				const combinedSource = stripUnusedFunctions(resolveIncludes(entryPath));
 
 				try {
 					Parser.parse(combinedSource);
@@ -199,7 +200,7 @@ export function activate(context: vscode.ExtensionContext) {
 		output.clear();
 	});
 
-	
+
 	const unitTestsCommand = vscode.commands.registerCommand('aiscript.unitTest', async () => {
 		output.show(true);
 

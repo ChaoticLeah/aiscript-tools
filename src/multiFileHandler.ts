@@ -32,3 +32,29 @@ export function resolveIncludes(filePath: string, visited = new Set<string>()): 
 
   return result;
 }
+
+export function stripUnusedFunctions(source: string) {
+  // Match all function definitions: @name(...) { ... }
+  const funcPattern = /@(\w+)\s*\([^)]*\)\s*{[^{}]*?(?:{[^{}]*?}[^{}]*?)*}/g;
+
+  let matches = [...source.matchAll(funcPattern)];
+
+  for (const match of matches) {
+    const full = match[0];
+    const name = match[1];
+
+    // Build a regex to find usage: match word, but skip @name(...) declaration
+    const usagePattern = new RegExp(`(?<!@)\\b${name}\\b`, 'g');
+
+    // Create source without the function block for accurate usage checking
+    const sourceWithoutThisFunc = source.replace(full, '');
+
+    if (!usagePattern.test(sourceWithoutThisFunc)) {
+      // If name not used, remove function from original source
+      source = source.replace(full, '');
+    }
+  }
+
+  // Clean up leftover blank lines
+  return source.replace(/\n{2,}/g, '\n').trim();
+}
