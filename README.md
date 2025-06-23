@@ -23,21 +23,24 @@ Create an `aiscript.json` file at your workspace root to configure the plugin ru
 Example `aiscript.json`:
 ```json
 {
-    "file": "plugin.is",
-    "baseUrl": "https://example.com",
-    "endUrl": "/",
-    "browserUrl": "http://127.0.0.1:9222",
-    "pipeConsole": true
+  "baseUrl": "https://woem.men",
+  "endUrl": "/",
+  "pipeConsole": true,
+  "entry": "./src/main.is",
+  "export": "plugin.is"
 }
 ```
 
-| Field       | Description                                                                                      |
-|-------------|------------------------------------------------------------------------------------------------|
-| `file`      | Relative path to your AIscript plugin file.                                                    |
-| `baseUrl`   | Base URL of the target site where the plugin will be injected.                                 |
-| `endUrl`    | The URL path to navigate after plugin injection (e.g., home page or dashboard).                |
-| `browserUrl`| Optional Puppeteer remote debugging URL (default: `http://127.0.0.1:9222`).                    |
-| `pipeConsole`| Optional boolean to pipe browser console logs into VSCode output (default: `true`).           |
+| Field         | Description                                                                                     |
+|---------------|-------------------------------------------------------------------------------------------------|
+| `baseUrl`     | Base URL of the target Misskey instance where the plugin will be injected.                     |
+| `endUrl`      | The page path to open after plugin injection (e.g., `/notes/abc` or `/explore`).               |
+| `pipeConsole` | Whether to pipe plugin-related console output to the VSCode terminal.                          |
+| `entry`       | The entry point AIscript file (your main plugin source).                                       |
+| `export`      | The output file that contains the compiled, single-file version of your plugin.                |
+
+---
+
 
 ### Running the Plugin Watcher
 
@@ -76,7 +79,7 @@ To clear the plugin runner output channel.
 
 Before using for the first time make sure you:
 - Log into the instance in the browser you are using
-- Manually add the plugin the first time
+- Manually install your plugin in the first plugin slot.
 
 ## Shortcomings
 

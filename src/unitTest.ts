@@ -10,7 +10,7 @@ let interpreter: Interpreter;
 
 export async function runUnitTest(file: string, out: OutputChannel) {
     const combinedSource = resolveIncludes(file);
-    fs.writeFileSync(file + ".out.is", combinedSource, 'utf8');
+    fs.writeFileSync(file + ".debug.is", combinedSource, 'utf8');
     parser = new Parser();
     interpreter = new Interpreter({
         'Test:describe': values.FN_NATIVE(([func]) => {
